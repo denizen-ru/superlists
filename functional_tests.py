@@ -1,8 +1,11 @@
 from selenium import webdriver
 import unittest
 
+
 class NewVisitorTest(unittest.TestCase):
+
     """docstring for NewVisitorTest"""
+
     def setUp(self):
         self.browser = webdriver.Chrome()
         self.browser.implicitly_wait(3)
