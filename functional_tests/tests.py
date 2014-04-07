@@ -1,11 +1,11 @@
-from django.test import LiveServerTestCase
+from django.contrib.staticfiles.testing import StaticLiveServerCase
 from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
 import unittest
 import time
 
 
-class NewVisitorTest(LiveServerTestCase):
+class NewVisitorTest(StaticLiveServerCase):
 
     """tests for home page"""
 
@@ -72,7 +72,6 @@ class NewVisitorTest(LiveServerTestCase):
         inputbox = self.browser.find_element_by_id('id_new_item')
         # inputbox.send_keys('testing')
         # inputbox.send_keys(Keys.ENTER)
-        print inputbox.location
         x = inputbox.location['x']
         width = inputbox.size['width']
-        self.assertAlmostEqual(x + width / 2, 512, delta=5)
+        self.assertAlmostEqual(x + width / 2, 512, delta=6)
