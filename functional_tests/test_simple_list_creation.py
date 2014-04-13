@@ -7,7 +7,6 @@ class NewVisitorTest(FunctionalTest):
 
     """tests for home page"""
 
-    # @unittest.skip('cause it\'s so long...')
     def test_can_start_a_list_and_retrieve_it_later(self):
         self.browser.get(self.server_url)
         self.assertIn('To-Do', self.browser.title)

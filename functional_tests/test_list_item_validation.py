@@ -5,13 +5,14 @@ from selenium.webdriver.common.keys import Keys
 
 class ItemValidationTest(FunctionalTest):
 
-    # @skip('just skiping')
+    error_text = "You can't have an empty list item"
+
     def test_cannot_add_empty_list_items(self):
         self.browser.get(self.server_url)
         self.browser.find_element_by_id('id_new_item').send_keys(Keys.ENTER)
 
         error = self.browser.find_element_by_css_selector('.has-error')
-        self.assertEqual(error.text, "You can't have an empty list item")
+        self.assertEqual(error.text, self.error_text)
 
         self.browser.find_element_by_id(
             'id_new_item').send_keys('Buy milk' + Keys.ENTER)
@@ -21,9 +22,9 @@ class ItemValidationTest(FunctionalTest):
 
         self.check_for_row_in_list_table('1: Buy milk')
         error = self.browser.find_element_by_css_selector('.has-error')
-        self.assertEqual(error.text, "You can't have an empty list item")
+        self.assertEqual(error.text, self.error_text)
 
         self.browser.find_element_by_id(
             'id_new_item').send_keys('Make tea' + Keys.ENTER)
         self.check_for_row_in_list_table('1: Buy milk')
-        self.check_for_row_in_list_table('2: MAke tea')
+        self.check_for_row_in_list_table('2: Make tea')
