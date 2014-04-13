@@ -1,5 +1,6 @@
 from .base import FunctionalTest
-from unittest import skip, Keys
+from unittest import skip
+from selenium.webdriver.common.keys import Keys
 
 
 class ItemValidationTest(FunctionalTest):
