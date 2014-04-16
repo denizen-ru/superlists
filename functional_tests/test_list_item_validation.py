@@ -9,22 +9,20 @@ class ItemValidationTest(FunctionalTest):
 
     def test_cannot_add_empty_list_items(self):
         self.browser.get(self.server_url)
-        self.browser.find_element_by_id('id_new_item').send_keys(Keys.ENTER)
+        self.get_item_input_box().send_keys(Keys.ENTER)
 
         error = self.browser.find_element_by_css_selector('.has-error')
         self.assertEqual(error.text, self.error_text)
 
-        self.browser.find_element_by_id(
-            'id_new_item').send_keys('Buy milk' + Keys.ENTER)
+        self.get_item_input_box().send_keys('Buy milk' + Keys.ENTER)
         self.check_for_row_in_list_table('1: Buy milk')
 
-        self.browser.find_element_by_id('id_new_item').send_keys(Keys.ENTER)
+        self.get_item_input_box().send_keys(Keys.ENTER)
 
         self.check_for_row_in_list_table('1: Buy milk')
         error = self.browser.find_element_by_css_selector('.has-error')
         self.assertEqual(error.text, self.error_text)
 
-        self.browser.find_element_by_id(
-            'id_new_item').send_keys('Make tea' + Keys.ENTER)
+        self.get_item_input_box().send_keys('Make tea' + Keys.ENTER)
         self.check_for_row_in_list_table('1: Buy milk')
         self.check_for_row_in_list_table('2: Make tea')
