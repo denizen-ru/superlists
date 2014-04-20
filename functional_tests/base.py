@@ -19,6 +19,9 @@ class FunctionalTest(StaticLiveServerCase):
         if cls.server_url == cls.live_server_url:
             super(FunctionalTest, cls).tearDownClass()
 
+    def get_error_element(self):
+        return self.browser.find_element_by_css_selector('.has-error')
+
     def setUp(self):
         self.browser = webdriver.Chrome()
         self.browser.implicitly_wait(3)

@@ -11,7 +11,9 @@ class ItemForm(forms.models.ModelForm):
 
     def save(self, for_list):
         self.instance.list = for_list
-        return super(ItemForm, self).save()
+        return super(ItemForm, self).save(self)
+        # return forms.models.ModelForm.save()
+
 
     class Meta:
         model = Item
