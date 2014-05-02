@@ -26,7 +26,6 @@ TEMPLATE_DEBUG = True
 
 ALLOWED_HOSTS = []
 
-
 # Application definition
 
 INSTALLED_APPS = (
@@ -53,6 +52,9 @@ ROOT_URLCONF = 'superlists.urls'
 
 WSGI_APPLICATION = 'superlists.wsgi.application'
 
+
+AUTH_USER_MODEL = 'accounts.User'
+AUTHENTICATION_BACKENDS = ('accounts.authentication.PersonaAuthenticationBackend',)
 
 # Database
 # https://docs.djangoproject.com/en/1.6/ref/settings/#databases
