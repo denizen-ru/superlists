@@ -33,8 +33,7 @@ def _get_latest_source(source_folser):
 def _update_settings(source_folser, site_name):
     settings_path = source_folser + '/superlists/settings.py'
     sed(settings_path, "DEBUG = True", "DEBUG = False")
-    sed(settings_path, 'ALLOWED_HOSTS =.+$',
-        'ALLOWED_HOSTS = ["%s"]' % (site_name,))
+    sed(settings_path, 'DOMAIN = "localhost"', 'DOMAIN = "%s"' % (site_name,))
     secret_key_file = source_folser + '/superlists/secret_key.py'
     if not exists(secret_key_file):
         chars = 'abcdefghijklmnopqrstuvwxyz01234567890!@#$%^&*(-_=+)'
@@ -59,3 +58,26 @@ def _update_static_files(source_folser):
 def _update_database(source_folser):
     run('cd %s && ../virtualenv/bin/python manage.py migrate --noinput' %
         (source_folser,))
+
+
+def _get_base_folder(host):
+    return '~/sites/' + host
+
+
+def _get_manage_dot_py(host):
+    return '{path}/virtualenv/bin/python {path}/source/manage.py'.format(
+        path=_get_base_folder(host)
+    )
+
+
+def reset_database():
+    run('{manage_py} flush --noinput'.format(
+        manage_py=_get_manage_dot_py(env.host)))
+
+
+def create_session_on_server(email):
+    session_key = run('{manage_py} create_session {email}'.format(
+        manage_py=_get_manage_dot_py(env.host),
+        email=email,
+    ))
+    print(session_key)
