@@ -2,8 +2,9 @@ from django.core.exceptions import ValidationError
 from django.http import HttpResponse
 from django.shortcuts import render, redirect
 from django.contrib.auth import get_user_model
-
-from lists.forms import ItemForm, ExistingListItemForm, EMPTY_LIST_ERROR, DUPLICATE_ITEM_ERROR
+import sys
+from lists.forms import (ItemForm, ExistingListItemForm,
+                         NewListForm, EMPTY_LIST_ERROR, DUPLICATE_ITEM_ERROR)
 from lists.models import Item, List
 
 User = get_user_model()
@@ -20,22 +21,30 @@ def view_list(request, list_id):
     if request.method == 'POST':
         form = ExistingListItemForm(for_list=list_, data=request.POST)
         if form.is_valid():
-            form.save(for_list=list_)
+            form.save()
             return redirect(list_)
 
     return render(request, 'list.html', {'list': list_, "form": form})
 
 
 def new_list(request):
-    form = ItemForm(data=request.POST)
+    form = NewListForm(data=request.POST)
     if form.is_valid():
-        list_ = List()
-        list_.owner = request.user
+        list_ = form.save(owner=request.user)
+        if request.user.is_authenticated():
+            list_.owner = request.user
         list_.save()
-        form.save(for_list=list_)
         return redirect(list_)
     else:
         return render(request, 'home.html', {'form': form})
+
+
+def new_list2(request):
+    form = NewListForm(data=request.POST)
+    if form.is_valid():
+        list_ = form.save(owner=request.user)
+        return redirect(list_)
+    return render(request, 'home.html', {'form': form})
 
 
 def my_lists(request, email):

@@ -1,19 +1,14 @@
+from django.db import models
 from django import forms
 from django.core.exceptions import ValidationError
-
-from lists.models import Item
+import sys
+from lists.models import Item, List
 
 EMPTY_LIST_ERROR = "You can't have an empty list item"
 DUPLICATE_ITEM_ERROR = "You've already got this in your list"
 
 
 class ItemForm(forms.models.ModelForm):
-
-    def save(self, for_list):
-        self.instance.list = for_list
-        return super(ItemForm, self).save(self)
-        # return forms.models.ModelForm.save()
-
 
     class Meta:
         model = Item
@@ -40,3 +35,13 @@ class ExistingListItemForm(ItemForm):
         except ValidationError as e:
             e.error_dict = {'text': [DUPLICATE_ITEM_ERROR]}
             self._update_errors(e)
+
+
+class NewListForm(ItemForm):
+
+    def save(self, owner):
+        if owner.is_authenticated():
+            return List.create_new(
+                first_item_text=self.cleaned_data['text'], owner=owner)
+        else:
+            return List.create_new(first_item_text=self.cleaned_data['text'])
