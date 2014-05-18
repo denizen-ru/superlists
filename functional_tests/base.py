@@ -1,11 +1,16 @@
+# -*- coding: utf8 -*-
 from django.contrib.staticfiles.testing import StaticLiveServerCase
 from selenium import webdriver
 from selenium.webdriver.support.ui import WebDriverWait
-import sys, os
+from selenium.common.exceptions import WebDriverException
+import sys
+import os
+import time
 from datetime import datetime
 
 from .server_tools import reset_database
 
+DEFAULT_WAIT = 5
 SCREEN_DUMP_LOCATION = os.path.abspath(
     os.path.join(os.path.dirname(__file__), 'screendumps'))
 
@@ -36,11 +41,10 @@ class FunctionalTest(StaticLiveServerCase):
         if self.against_staging:
             reset_database(self.server_host)
         self.browser = webdriver.Chrome()
-        self.browser.implicitly_wait(3)
+        self.browser.implicitly_wait(DEFAULT_WAIT)
 
     def tearDown(self):
         if self._test_has_failed():
-            print >> sys.stderr, SCREEN_DUMP_LOCATION
             if not os.path.exists(SCREEN_DUMP_LOCATION):
                 os.makedirs(SCREEN_DUMP_LOCATION)
             for ix, handle in enumerate(self.browser.window_handles):
@@ -76,6 +80,8 @@ class FunctionalTest(StaticLiveServerCase):
         self.assertNotIn(email, navbar.text)
 
     def _test_has_failed(self):
+        # ошибки надо поискать где-то в другом месте, это работает не так, как
+        # хотелось бы (в self._resultForDoCleanups.errors их тоже нет...)
         for method, error in self._resultForDoCleanups.failures:
             if error:
                 return True
@@ -100,3 +106,12 @@ class FunctionalTest(StaticLiveServerCase):
             method=self._testMethodName,
             windowid=self._windowid,
             timestamp=timestamp)
+
+    def wait_for(self, function_with_assertion, timeout=DEFAULT_WAIT):
+        start_time = time.time()
+        while time.time() - start_time < timeout:
+            try:
+                return function_with_assertion()
+            except (AssertionError, WebDriverException):
+                time.sleep(0.1)
+        return function_with_assertion()
